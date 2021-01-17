@@ -1,1 +1,4 @@
-ÿþ
+*.exe
+*.o
+.vs/
+debug.asm
