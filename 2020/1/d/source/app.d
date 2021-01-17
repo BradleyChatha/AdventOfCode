@@ -1,5 +1,5 @@
 module app;
-			
+            
 import std;
 
 string INPUT1;
@@ -7,13 +7,13 @@ string INPUT2;
 
 void main()
 {
-	INPUT1 = std.file.readText("../input1.txt");
-	INPUT2 = std.file.readText("../input2.txt");
-	
+    INPUT1 = std.file.readText("../input1.txt");
+    INPUT2 = std.file.readText("../input2.txt");
+    
     auto numbers = INPUT1.splitter('\n').map!(s => s.to!long).array;
     numbers.sort();
 
-	writeln("Part 1: ", solve(numbers));
+    writeln("Part 1: ", solve(numbers));
     writeln("Part 2: ", solve2(numbers));
 }
 
