@@ -35,6 +35,12 @@ solve:
     lea rcx, [PRINT_I32]
     mov edx, eax
     call printf
+
+    call part2
+    
+    lea rcx, [PRINT_I32]
+    mov edx, eax
+    call printf
     
 .leave:
     leave

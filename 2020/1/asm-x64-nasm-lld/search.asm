@@ -6,6 +6,8 @@ SECTION .text
 search:
     push rbp
     mov rbp, rsp
+    push rsi
+    push rdi
     sub rsp, 0 + 0 + 0
     
     ; Register usage:
@@ -24,6 +26,8 @@ search:
 .found:
     mov rax, 1
     
-.leave:	
+.leave:
+    pop rsi
+    pop rdi
     leave
     ret
