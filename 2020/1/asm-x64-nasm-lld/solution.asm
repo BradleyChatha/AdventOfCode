@@ -3,10 +3,8 @@ SECTION .bss
     
 SECTION .data
     PRINT_I32  db '%d', 0x0A, 0
-    TEST_NUM_1 db '0', 0
-    TEST_NUM_2 db '9', 0
-    TEST_NUM_3 db '32', 0
-    TEST_NUM_4 db '420', 0
+    PRINT_PART_1 db 'Part 1: %d', 0x0A, 0
+    PRINT_PART_2 db 'Part 2: %d', 0x0A, 0
     
     g_numberBufferLen: dq 0
 
@@ -32,13 +30,13 @@ solve:
     
     call part1
     
-    lea rcx, [PRINT_I32]
+    lea rcx, [PRINT_PART_1]
     mov edx, eax
     call printf
 
     call part2
     
-    lea rcx, [PRINT_I32]
+    lea rcx, [PRINT_PART_2]
     mov edx, eax
     call printf
     
