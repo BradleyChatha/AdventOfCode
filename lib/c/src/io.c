@@ -7,7 +7,7 @@ bool loadFileAsSlice(char* fileName, Slice* slice)
     printf("Loading input file: %s\n", fileName);
 
     FILE* file;
-    fopen_s(&file, fileName, "r");
+    fopen_s(&file, fileName, "rb"); // Note: Windows handles "r" weirdly, but handles byte mode perfectly fine.
     if(!file)
     {
         printf("Could not open file.\n");
@@ -26,13 +26,25 @@ bool loadFileAsSlice(char* fileName, Slice* slice)
         return false;
     }
 
-    size_t read = fread(slice->ptr, 1, slice->length, file);
+    size_t read = 0;
+    while(read < slice->length)
+    {
+        const size_t result = fread(slice->ptr + read, 1, slice->length - read, file);
+        if(result == 0)
+        {
+            printf("Error while reading file.\n");
+            fclose(file);
+            free(slice->ptr);
+            return false;
+        }
+        read += result;
+    }
     fclose(file);
 
     if(read != slice->length)
     {
         free(slice->ptr);
-        printf("Could not read in the text in its entirety");
+        printf("Could not read in the text in its entirety. Expected %s bytes but got %s bytes.\n", slice->length, read);
         return false;
     }
 

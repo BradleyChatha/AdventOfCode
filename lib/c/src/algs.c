@@ -9,10 +9,10 @@ bool splitAndApply(Slice string, char delim, void* context, bool (*func)(Slice v
         {
             Slice slice;
             slice.ptr = string.ptr + start;
-            slice.length = start - i;
+            slice.length = i - start;
 
             if(!func(slice, context)) return false;
-            start = i;
+            start = i + 1;
         }
     }
 
@@ -20,7 +20,7 @@ bool splitAndApply(Slice string, char delim, void* context, bool (*func)(Slice v
     {
         Slice slice;
         slice.ptr = string.ptr + start;
-        slice.length = start - string.length;
+        slice.length = string.length - start;
 
         func(slice, context);
     }
