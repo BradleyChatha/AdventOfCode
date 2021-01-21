@@ -133,9 +133,6 @@ struct RunDayCommand
     @CommandPositionalArg(1, "day", "Which day to create the scaffolder for.")
     @PostValidate!dayValidator
     int day;
-    
-    @CommandNamedArg("--show-output", "Shows the output for each ran solution.")
-    Nullable!bool showOutput;
 
     static struct RunResult
     {
@@ -185,9 +182,6 @@ struct RunDayCommand
                 result.resultPart1.padLeft(' ', largestPart1).to!string.ansi.fg(Ansi4BitColour.green),
                 result.resultPart2.padLeft(' ', largestPart2).to!string.ansi.fg(Ansi4BitColour.green),
             );
-            
-            if(this.showOutput.get(false))
-                writeln(result.output);
         }
 
         return 0;
@@ -195,8 +189,13 @@ struct RunDayCommand
 
     RunResult run(string adventRunPath)
     {
+        version(Windows)
+            const POWERSHELL = "powershell";
+        else
+            const POWERSHELL = "pwsh";
+        
         auto value = RunResult(adventRunPath.dirName.baseName);
-        const results = executeShell(escapeShellCommand("powershell", "-ExecutionPolicy", "Bypass", "./advent_run.ps1"), null, Config.none, ulong.max, adventRunPath.dirName);
+        const results = executeShell(escapeShellCommand(POWERSHELL, "-ExecutionPolicy", "Bypass", "./advent_run.ps1"), null, Config.none, ulong.max, adventRunPath.dirName);
         value.output = results.output;
         value.statusCode = results.status;
         
