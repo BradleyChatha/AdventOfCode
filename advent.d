@@ -189,8 +189,13 @@ struct RunDayCommand
 
     RunResult run(string adventRunPath)
     {
+        version(Windows)
+            const POWERSHELL = "powershell";
+        else
+            const POWERSHELL = "pwsh";
+        
         auto value = RunResult(adventRunPath.dirName.baseName);
-        const results = executeShell(escapeShellCommand("powershell", "-ExecutionPolicy", "Bypass", "./advent_run.ps1"), null, Config.none, ulong.max, adventRunPath.dirName);
+        const results = executeShell(escapeShellCommand(POWERSHELL, "-ExecutionPolicy", "Bypass", "./advent_run.ps1"), null, Config.none, ulong.max, adventRunPath.dirName);
         value.output = results.output;
         value.statusCode = results.status;
         
