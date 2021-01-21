@@ -42,7 +42,7 @@ size_t countTrees(const Slice input, const size_t deltaX, const size_t deltaY)
     const size_t offsetPerLine = charsPerLine;
     charsPerLine -= ((const char*)input.ptr)[charsPerLine-1] == '\r';
     charsPerLine--; // Uncount the \n
-    charsPerLine--; // idk but this makes it work, so...
+    //charsPerLine--; // idk but this makes it work, so...
 
     size_t cursorX = deltaX;
     size_t cursorY = deltaY;
