@@ -24,6 +24,6 @@ jobs:
           sudo apt-get install ninja-build
       
       - name: "Build Advent Tool"
-        run: "dub build --single ./advent.d -- --show-output"
+        run: "dub build --single ./advent.d"
       - name: "Run Advent Tool for all in 2020"
-        run: "./scaffolder run day 2020 1"
+        run: "./scaffolder run day 2020 1 --show-output"
