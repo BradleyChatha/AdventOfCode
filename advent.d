@@ -133,6 +133,9 @@ struct RunDayCommand
     @CommandPositionalArg(1, "day", "Which day to create the scaffolder for.")
     @PostValidate!dayValidator
     int day;
+    
+    @CommandNamedArg("show-output", "Shows the entire output for all solutions.")
+    Nullable!bool showOutput;
 
     static struct RunResult
     {
@@ -182,6 +185,9 @@ struct RunDayCommand
                 result.resultPart1.padLeft(' ', largestPart1).to!string.ansi.fg(Ansi4BitColour.green),
                 result.resultPart2.padLeft(' ', largestPart2).to!string.ansi.fg(Ansi4BitColour.green),
             );
+            
+            if(this.showOutput.get(false))
+                writeln(result.output);
         }
 
         return 0;
