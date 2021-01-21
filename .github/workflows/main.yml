@@ -19,7 +19,7 @@ jobs:
       - name: "Install dependencies"
         run: |
           sudo apt-get update
-          sudo apt-get install clang
+          sudo apt-get install clang-11
           sudo apt-get install cmake
           sudo apt-get install ninja-build
       
