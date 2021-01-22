@@ -44,7 +44,7 @@ calcLineSize:
 
     ;int3
 
-    lea rdi, [g_input]
+    lea rdi, [g_input] ; oh, this is why. It works now though so who gives a damn.
     mov rcx, [g_inputLen]
     mov rax, 0x0A
 
