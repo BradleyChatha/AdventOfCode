@@ -11,7 +11,8 @@ enum SolutionType
     ERROR,
     c,
     cpp,
-    d
+    d,
+	python
 }
 
 struct Scaffolder
@@ -116,9 +117,10 @@ struct NewSolutionCommand
     this(ICommandLineInterface cli)
     {
         this._scaffolders = [
-            SolutionType.c:   Scaffolder(&scaffoldCProject),
-            SolutionType.cpp: Scaffolder(&scaffoldCppProject),
-            SolutionType.d:   Scaffolder(&scaffoldDProject)
+            SolutionType.c:      Scaffolder(&scaffoldCProject),
+            SolutionType.cpp:    Scaffolder(&scaffoldCppProject),
+            SolutionType.d:   	 Scaffolder(&scaffoldDProject),
+			SolutionType.python: Scaffolder(&scaffoldPythonProject)
         ];
     }
 }
@@ -255,6 +257,18 @@ void scaffoldCppProject(string dir)
             ScaffoldFile("advent_run.ps1",  import("cpp/advent_run.ps1")),
             ScaffoldFile("src/app.cpp",     import("cpp/app.cpp")),
             ScaffoldFile("CMakeLists.txt",  import("cpp/CMakeLists.txt"))
+        ]
+    );
+}
+
+void scaffoldPythonProject(string dir)
+{
+    scaffoldFiles(
+        dir,
+        [
+            ScaffoldFile(".gitignore",      import("python/.gitignore")),
+            ScaffoldFile("advent_run.ps1",  import("python/advent_run.ps1")),
+            ScaffoldFile("solution.py",     import("python/solution.py")),
         ]
     );
 }
