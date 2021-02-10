@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.dd": "html",
+        "algorithm": "cpp",
+        "xhash": "cpp",
+        "unordered_set": "cpp",
+        "charconv": "cpp",
+        "xstring": "cpp"
+    }
+}

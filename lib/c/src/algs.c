@@ -26,7 +26,7 @@ bool splitAndApply(Slice string, char delim, void* context, bool (*func)(Slice v
         slice.ptr = string.ptr + start;
         slice.length = string.length - start;
 
-        func(slice, context);
+        return func(slice, context);
     }
 
     return true;
