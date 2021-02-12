@@ -1,3 +1,5 @@
+from time import perf_counter_ns
+
 def read_file(file_name: str) -> str:
     with open(file_name, "r") as file:
         return file.read()
@@ -36,4 +38,6 @@ def countTrees(input_lines: str, delta_x: int, delta_y: int) -> int:
 
     return count
 
+time_start = perf_counter_ns()
 solution(input_1)
+print("Time: %d nsecs" % (perf_counter_ns() - time_start))

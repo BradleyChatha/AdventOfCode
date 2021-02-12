@@ -1,4 +1,5 @@
 from collections import namedtuple
+from time import perf_counter_ns
 
 def read_file(file_name: str) -> str:
     with open(file_name, "r") as file:
@@ -45,4 +46,6 @@ def part2(policies: list):
     print("Part 2:", valid_count)
 
 # Why am I even caring about Big-O for a 1000-line file with about 30 characters per line? In python? idk myself, I just do sometimes.
+time_start = perf_counter_ns()
 solution(input_1)
+print("Time: %d nsecs" % (perf_counter_ns() - time_start))
