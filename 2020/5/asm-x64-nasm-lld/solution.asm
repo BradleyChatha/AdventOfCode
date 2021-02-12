@@ -33,7 +33,7 @@ solve:
     mov rdx, rax
     call printf
 
-    call debugPrint
+    ;call debugPrint
 
     call part2
 

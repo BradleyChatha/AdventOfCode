@@ -141,6 +141,8 @@ struct RunDayCommand
         string solutionName;
         string resultPart1;
         string resultPart2;
+		string timeTaken; // Programs should only be reporting the time taken for their solve function, not anything else.
+		string timeTakenMs;
         
         string output;
         int statusCode;
@@ -171,18 +173,31 @@ struct RunDayCommand
 
         foreach(i, runner; runners.parallel(runners.length))
             results[i] = this.run(runner);
-
-        const largestName = results.map!(r => r.solutionName.length).maxElement();
-        const largestPart1 = results.map!(r => r.resultPart1.length).maxElement();
-        const largestPart2 = results.map!(r => r.resultPart2.length).maxElement();
+			
+		auto  resultsAndHeader = results.chain([RunResult("NAME", "PART1", "PART2", "TIME", "TIME(MS)")]);
+        const largestName      = resultsAndHeader.map!(r => r.solutionName.length).maxElement();
+        const largestPart1     = resultsAndHeader.map!(r => r.resultPart1.length).maxElement();
+        const largestPart2     = resultsAndHeader.map!(r => r.resultPart2.length).maxElement();
+		const largestTime      = resultsAndHeader.map!(r => r.timeTaken.length).maxElement();
+		const largestTimeMs    = resultsAndHeader.map!(r => r.timeTakenMs.length).maxElement();
         
+		writefln(
+			"%s: %s | %s | %s | %s",
+			"NAME".padLeft(' ', largestName).to!string.ansi.fg(Ansi4BitColour.blue),
+			"PART1".padLeft(' ', largestPart1).to!string.ansi.fg(Ansi4BitColour.blue),
+			"PART2".padLeft(' ', largestPart2).to!string.ansi.fg(Ansi4BitColour.blue),
+			"TIME(MS)".padLeft(' ', largestTimeMs).to!string.ansi.fg(Ansi4BitColour.blue),
+			"TIME".padLeft(' ', largestTime).to!string.ansi.fg(Ansi4BitColour.blue),
+		);
         foreach(result; results)
         {
             writefln(
-                "%s: %s | %s",
+                "%s: %s | %s | %s | %s",
                 result.solutionName.padLeft(' ', largestName).to!string.ansi.fg(Ansi4BitColour.magenta),
                 result.resultPart1.padLeft(' ', largestPart1).to!string.ansi.fg(Ansi4BitColour.green),
                 result.resultPart2.padLeft(' ', largestPart2).to!string.ansi.fg(Ansi4BitColour.green),
+                result.timeTakenMs.padLeft(' ', largestTimeMs).to!string.ansi.fg(Ansi4BitColour.green),
+                result.timeTaken.padLeft(' ', largestTime).to!string.ansi.fg(Ansi4BitColour.green),
             );
         }
 
@@ -201,11 +216,33 @@ struct RunDayCommand
         value.output = results.output;
         value.statusCode = results.status;
         
-        const regex1 = value.output.matchFirst(regex(`Part 1: (.+)`));
-        const regex2 = value.output.matchFirst(regex(`Part 2: (.+)`));
+        const regex1 	= value.output.matchFirst(regex(`Part 1: (.+)`));
+        const regex2 	= value.output.matchFirst(regex(`Part 2: (.+)`));
+		const regexTime	= value.output.matchFirst(regex(`Time: ([0-9]+) (.+)`));
 
         value.resultPart1 = (regex1.empty) ? "COULD NOT FIND" : regex1[1];
         value.resultPart2 = (regex2.empty) ? "COULD NOT FIND" : regex2[1];
+		
+		if(!regexTime.empty)
+		{
+			Duration taken;
+			switch(regexTime[2])
+			{
+				case "ms"    :
+				case "msecs" : taken = dur!"msecs" (regexTime[1].to!ulong); break;
+				case "us"    :
+				case "usecs" : taken = dur!"usecs" (regexTime[1].to!ulong); break;
+				case "hnsecs": taken = dur!"hnsecs"(regexTime[1].to!ulong); break;
+				case "nsecs" : taken = dur!"nsecs" (regexTime[1].to!ulong); break;
+			
+				default: break;
+			}
+			
+			value.timeTaken = (taken != Duration.init) ? taken.to!string : "INVALID TIME UNIT: "~regexTime[2];
+			value.timeTakenMs = taken.total!"msecs".to!string;
+		}
+		else
+			value.timeTaken = "COULD NOT FIND";
 
         return value;
     }

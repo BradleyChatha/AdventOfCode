@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.dd": "html",
+        "timeb.h": "c"
+    }
+}

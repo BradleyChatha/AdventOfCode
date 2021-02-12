@@ -1,11 +1,9 @@
-; Me 8 hours ago: "Oh this'll be fun and easy"
-; Me now: "Please lord make it end"
-; Also me now: "I've only done the easy part so far T_T"
 DEFAULT REL
 GLOBAL main
 BITS 64
 
 SECTION .data
+    MSG_TIME_TAKEN      db 'Time: %lld us', 0x0A, 0
     MSG_READING_INPUT 	db 'Reading input file.', 0x0A, 0
     INPUT_FILE 			db '../input1.txt', 0
     READ_MODE			db 'rb', 0
@@ -13,8 +11,10 @@ SECTION .data
     
     SEEK_END			equ 2
     
-    g_input    dq 0 ; Ptr to allocated memory
-    g_inputLen dq 0 ; Length of g_input
+    g_input               dq 0 ; Ptr to allocated memory
+    g_inputLen            dq 0 ; Length of g_input
+    g_ticksBeforeSolution dq 0 ; Ticks before the solve function is called.
+    g_ticksAfterSolution  dq 0 ; Ticks after the solve function was called.
 
 SECTION .text
 
@@ -28,6 +28,8 @@ extern ftell
 
 extern malloc
 extern free
+
+extern QueryPerformanceCounter
 
 %include "solution.asm"
 
@@ -98,10 +100,23 @@ main:
     
     cmp r13, rax
     jne .leave
+
+    ; Get ticks for timing purposes.
+    lea rcx, [g_ticksBeforeSolution]
+    call QueryPerformanceCounter
     
     ; Call the solving code.
     mov [g_input], r14
     call solve
+
+    ; Get ticks after, and print out the time the solve function took.
+    lea rcx, [g_ticksAfterSolution]
+    call QueryPerformanceCounter
+
+    mov rdx, [g_ticksAfterSolution]
+    sub rdx, [g_ticksBeforeSolution]
+    lea rcx, [MSG_TIME_TAKEN]
+    call printf
     
 .leave:
     mov rcx, r12

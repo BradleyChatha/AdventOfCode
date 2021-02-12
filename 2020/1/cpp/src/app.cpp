@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <vector>
 #include <ranges>
+#include <windows.h>
+#include <profileapi.h>
 
 std::string g_input1;
 std::string g_input2;
@@ -30,7 +32,12 @@ int main(void)
         g_input1 = readText("../../input1.txt");
         g_input2 = readText("../../input2.txt");
 
+        LARGE_INTEGER before, after;
+        if(!QueryPerformanceCounter(&before)) return -1;
         solve();
+        if(!QueryPerformanceCounter(&after)) return -1;
+
+        std::cout << "Time: " << after.QuadPart - before.QuadPart << " us" << std::endl;
         return 0;
     }
     catch(const std::exception& e)
