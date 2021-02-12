@@ -136,6 +136,9 @@ struct RunDayCommand
     @PostValidate!dayValidator
     int day;
 
+    @CommandNamedArg("r|release", "Pass the -Release flag into the solution's build scripts.")
+    Nullable!bool release;
+
     static struct RunResult
     {
         string solutionName;
@@ -210,9 +213,17 @@ struct RunDayCommand
             const POWERSHELL = "powershell";
         else
             const POWERSHELL = "pwsh";
-        
+
+        const command = escapeShellCommand(POWERSHELL, "-ExecutionPolicy", "Bypass", "./advent_run.ps1", this.release.get(false) ? "-Release" : "");
+        //debug writeln(command);
         auto value = RunResult(adventRunPath.dirName.baseName);
-        const results = executeShell(escapeShellCommand(POWERSHELL, "-ExecutionPolicy", "Bypass", "./advent_run.ps1"), null, Config.none, ulong.max, adventRunPath.dirName);
+        const results = executeShell(
+            command, 
+            null, 
+            Config.none, 
+            ulong.max, 
+            adventRunPath.dirName
+        );
         value.output = results.output;
         value.statusCode = results.status;
         

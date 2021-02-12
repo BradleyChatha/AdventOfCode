@@ -1,5 +1,5 @@
 param (
-    [bool] $Release = $false
+    [switch] $Release = $false
 )
 
 if ($Release -eq $false)
