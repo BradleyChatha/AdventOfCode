@@ -7,27 +7,9 @@
 #include <adventlib/algs.h>
 #include <adventlib/types.h>
 #include <adventlib/io.h>
+#include <adventlib/entrypoint.h>
 
 #define INITIAL_ARRAY_SIZE 64
-
-Slice g_input1;
-Slice g_input2;
-
-int solve();
-
-int main(void)
-{
-    if(!loadFileAsSlice("../../input1.txt", &g_input1)) return -1;
-    if(!loadFileAsSlice("../../input2.txt", &g_input2)) return -1;
-    
-    LARGE_INTEGER before, after;
-
-    if(!QueryPerformanceCounter(&before)) return -1;
-    int result = solve();
-    if(!QueryPerformanceCounter(&after)) return -1;
-
-    printf("Time: %lld us\n", after.QuadPart - before.QuadPart);
-}
 
 typedef enum EntryType
 {
@@ -65,9 +47,9 @@ int parsePassports(const Slice input);
 int part1();
 int part2();
 
-int solve()
+int solve(Slice input)
 {
-    int result = !(!parsePassports(g_input1) && !part1() && !part2());
+    int result = !(!parsePassports(input) && !part1() && !part2());
     //debugPrint();
 
     if(g_passports.ptr)

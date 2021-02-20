@@ -7,33 +7,15 @@
 #include <adventlib/algs.h>
 #include <adventlib/types.h>
 #include <adventlib/io.h>
-
-Slice g_input1;
-Slice g_input2;
-
-int solve();
-
-int main(void)
-{
-    if(!loadFileAsSlice("../../input1.txt", &g_input1)) return -1;
-    if(!loadFileAsSlice("../../input2.txt", &g_input2)) return -1;
-    
-    LARGE_INTEGER before, after;
-
-    if(!QueryPerformanceCounter(&before)) return -1;
-    int result = solve();
-    if(!QueryPerformanceCounter(&after)) return -1;
-
-    printf("Time: %lld us\n", after.QuadPart - before.QuadPart);
-}
+#include <adventlib/entrypoint.h>
 
 size_t countTrees(const Slice input, const size_t deltaX, const size_t deltaY);
 int part1(const Slice input);
 int part2(const Slice input);
 
-int solve()
+int solve(Slice input)
 {
-    return !part1(g_input1) && !part2(g_input1);
+    return !part1(input) && !part2(input);
 }
 
 size_t countTrees(const Slice input, const size_t deltaX, const size_t deltaY)

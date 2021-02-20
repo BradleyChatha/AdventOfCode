@@ -1,5 +1,5 @@
 /+dub.sdl:
-    name "scaffolder"
+    name "advent"
     dependency "jcli" version="0.11.0"
 +/
 module advent;
@@ -275,7 +275,7 @@ void scaffoldDProject(string dir)
     scaffoldFiles(
         dir,
         [
-            ScaffoldFile("dub.sdl",        "name \"solution\""),
+            ScaffoldFile("dub.sdl",        "name \"solution\"\nsourcePaths \"./source\" \"../../../lib/d\""),
             ScaffoldFile(".gitignore",     ".dub/\n*.exe"),
             ScaffoldFile("source/app.d",   import("d/app.d")),
             ScaffoldFile("advent_run.ps1", import("d/advent_run.ps1"))

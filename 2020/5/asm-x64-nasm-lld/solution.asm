@@ -17,8 +17,6 @@ SECTION .data
     ; We're indexing via a nibble, hence why there's 15 entries.
     part1_jumpTable: dq part1.b, _trap, part1.f, _trap, part1.newline, part1.l, _trap, _trap, part1.r, _trap, _trap, _trap, _trap, _trap, _trap, _trap
 
-%include "numberParser.asm"
-
 SECTION .text
 
 ; void ()

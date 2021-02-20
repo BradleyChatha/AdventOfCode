@@ -7,25 +7,7 @@
 #include <adventlib/algs.h>
 #include <adventlib/types.h>
 #include <adventlib/io.h>
-
-Slice g_input1;
-Slice g_input2;
-
-int solve();
-
-int main(void)
-{
-    if(!loadFileAsSlice("../../input1.txt", &g_input1)) return -1;
-    if(!loadFileAsSlice("../../input2.txt", &g_input2)) return -1;
-    
-    LARGE_INTEGER before, after;
-
-    if(!QueryPerformanceCounter(&before)) return -1;
-    int result = solve();
-    if(!QueryPerformanceCounter(&after)) return -1;
-
-    printf("Time: %lld us\n", after.QuadPart - before.QuadPart);
-}
+#include <adventlib/entrypoint.h>
 
 bool part1();
 bool part2();
@@ -35,9 +17,9 @@ bool sortNumbers();
 Slice g_numbers;
 size_t g_numbersCursor = 0;
 
-int solve()
+int solve(Slice input)
 {
-    if(!parseNumbers(g_input1)) return -1;
+    if(!parseNumbers(input)) return -1;
     if(!sortNumbers()) return -1;
     if(!part1()) return -1;
     if(!part2()) return -1;

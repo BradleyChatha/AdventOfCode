@@ -4,53 +4,14 @@
 #include <filesystem>
 #include <windows.h>
 #include <profileapi.h>
-
-std::string g_input1;
-std::string g_input2;
-
-std::string readText(const std::string& file)
-{
-    if(!std::filesystem::exists(file))
-        throw std::exception("File does not exist");
-
-    auto fstream = std::ifstream(file);
-    auto sstream = std::stringstream();
-    sstream << fstream.rdbuf();
-
-    return sstream.str();
-}
-
-void solve();
-
-int main(void)
-{
-    try
-    {
-        g_input1 = readText("../../input1.txt");
-        g_input2 = readText("../../input2.txt");
-
-        LARGE_INTEGER before, after;
-        if(!QueryPerformanceCounter(&before)) return -1;
-        solve();
-        if(!QueryPerformanceCounter(&after)) return -1;
-
-        std::cout << "Time: " << after.QuadPart - before.QuadPart << " us" << std::endl;
-        return 0;
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << "ERROR: " << e.what() << '\n';
-        return -1;
-    }
-}
+#include <adventlibpp/entrypoint.hpp>
 
 uint64_t countTrees(const std::string& input, const size_t deltaX, const size_t deltaY);
 void part1(const std::string& input);
 void part2(const std::string& input);
 
-void solve()
+void solve(const std::string& input)
 {
-    auto const& input = g_input1;
     part1(input);
     part2(input);
 }

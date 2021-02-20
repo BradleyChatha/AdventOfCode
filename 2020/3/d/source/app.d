@@ -1,27 +1,17 @@
 module app;
-            
-import std;
 
-alias SkipEveryOtherLine = Flag!"skip";
-import std.datetime.stopwatch : StopWatch2 = StopWatch;
+import advent;
 
-string INPUT1;
-string INPUT2;
-
-void main()
+void main(string[] args)
 {
-    INPUT1 = std.file.readText("../input1.txt");
-    INPUT2 = std.file.readText("../input2.txt");
-
-    auto timer = StopWatch2(AutoStart.yes);
-    solve();
-    writeln("Time: ", timer.peek().total!"usecs", " us");
+    adventEntrypoint(args, &solve);
 }
 
-void solve()
+alias SkipEveryOtherLine = Flag!"skip";
+
+void solve(string input)
 {
-    const input = INPUT1;
-    auto  lines = input.splitter('\n').map!chomp;
+    auto lines = input.splitter('\n').map!chomp;
     const charsPerLine = lines.front.length;
     assert(lines.all!(l => l.length == charsPerLine), "Not all lines have the same length.");
 
