@@ -21,6 +21,8 @@ void solve(const std::string& input)
     part2();
 }
 
+void printAnswers(){}
+
 void parseNumbers(const std::string& input, std::vector<int>& numbers)
 {
     // TFW Microsoft haven't fully implemented std::ranges so I can't use the one part of it I need.

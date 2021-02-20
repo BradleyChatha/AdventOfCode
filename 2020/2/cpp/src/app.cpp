@@ -28,6 +28,8 @@ void solve(const std::string& input)
     part2();
 }
 
+void printAnswers(){}
+
 void parseAndAddLine(const std::string& line)
 {
     size_t oldSplitPos;

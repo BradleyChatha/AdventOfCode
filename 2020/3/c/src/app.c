@@ -18,6 +18,8 @@ int solve(Slice input)
     return !part1(input) && !part2(input);
 }
 
+void printAnswers(){}
+
 size_t countTrees(const Slice input, const size_t deltaX, const size_t deltaY)
 {
     // Seems kind of boring to essentially do a translation of the D version, so we'll go for something slightly different.

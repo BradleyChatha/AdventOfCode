@@ -26,6 +26,8 @@ int solve(Slice input)
     return 0;
 }
 
+void printAnswers(){}
+
 bool part1()
 {
     const int* numbers = (const int*)g_numbers.ptr;

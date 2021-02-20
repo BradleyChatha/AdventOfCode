@@ -58,6 +58,8 @@ int solve(Slice input)
     return result;
 }
 
+void printAnswers(){}
+
 void debugPrint()
 {
     const Passport EMPTY = {};

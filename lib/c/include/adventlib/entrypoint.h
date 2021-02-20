@@ -11,6 +11,7 @@ Slice g_input1;
 Slice g_input2;
 
 int solve(Slice input);
+void printAnswers();
 
 int main(void)
 {
@@ -22,6 +23,7 @@ int main(void)
     if(!QueryPerformanceCounter(&before)) return -1;
     int result = solve(g_input1);
     if(!QueryPerformanceCounter(&after)) return -1;
-
+    
+    printAnswers();
     printf("Time: %lld us\n", after.QuadPart - before.QuadPart);
 }

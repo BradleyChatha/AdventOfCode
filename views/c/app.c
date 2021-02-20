@@ -1,5 +1,3 @@
-#include <windows.h>
-#include <profileapi.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -8,6 +6,10 @@
 #include <adventlib/types.h>
 #include <adventlib/io.h>
 #include <adventlib/entrypoint.h>
+
+void printAnswers()
+{
+}
 
 int solve(Slice input)
 {

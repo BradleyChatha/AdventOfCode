@@ -16,6 +16,8 @@ void solve(const std::string& input)
     part2(input);
 }
 
+void printAnswers(){}
+
 uint64_t countTrees(const std::string& input, const size_t deltaX, const size_t deltaY)
 {
     const size_t newLinePos = input.find('\n');

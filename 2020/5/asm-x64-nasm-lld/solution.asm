@@ -11,9 +11,6 @@ SECTION .data
     ROW_COUNT: equ 128
     BITMASK_DEBUG_STRING_LENGTH: equ (ROW_COUNT * 9) + 1 ; * 9 for 8 characters (for one byte) + a new line char. + 1 for the null terminator.
 
-    PRINT_PART_1 db 'Part 1: %lld', 0x0A, 0
-    PRINT_PART_2 db 'Part 2: %lld', 0x0A, 0
-
     ; We're indexing via a nibble, hence why there's 15 entries.
     part1_jumpTable: dq part1.b, _trap, part1.f, _trap, part1.newline, part1.l, _trap, _trap, part1.r, _trap, _trap, _trap, _trap, _trap, _trap, _trap
 
@@ -26,18 +23,12 @@ solve:
     sub rsp, 32 + 0 + 0
 
     call part1
-    
-    lea rcx, [PRINT_PART_1]
-    mov rdx, rax
-    call printf
+    mov [g_part1Answer], rax
 
     ;call debugPrint
 
     call part2
-
-    lea rcx, [PRINT_PART_2]
-    mov rdx, rax
-    call printf
+    mov [g_part2Answer], rax
     
 .leave:
     leave

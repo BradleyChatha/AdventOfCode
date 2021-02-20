@@ -8,6 +8,8 @@ SECTION .data
     INPUT_FILE 			db '../input1.txt', 0
     READ_MODE			db 'rb', 0
     PRINT_STRING_LINE   db '%s', 0x0A, 0
+    PRINT_PART_1        db 'Part 1: %lld', 0x0A, 0
+    PRINT_PART_2        db 'Part 2: %lld', 0x0A, 0
     
     SEEK_END			equ 2
     
@@ -15,6 +17,8 @@ SECTION .data
     g_inputLen            dq 0 ; Length of g_input
     g_ticksBeforeSolution dq 0 ; Ticks before the solve function is called.
     g_ticksAfterSolution  dq 0 ; Ticks after the solve function was called.
+    g_part1Answer         dq 0
+    g_part2Answer         dq 0
 
 SECTION .text
 
@@ -116,6 +120,14 @@ main:
     mov rdx, [g_ticksAfterSolution]
     sub rdx, [g_ticksBeforeSolution]
     lea rcx, [MSG_TIME_TAKEN]
+    call printf
+
+    lea rcx, [PRINT_PART_1]
+    mov rdx, [g_part1Answer]
+    call printf
+
+    lea rcx, [PRINT_PART_2]
+    mov rdx, [g_part2Answer]
     call printf
     
 .leave:

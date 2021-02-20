@@ -27,6 +27,8 @@ void solve(const std::string& input)
     part2();
 }
 
+void printAnswers(){}
+
 void parsePassportLine(std::string_view line, Passport& passport)
 {
     bool loop = true;

@@ -25,6 +25,8 @@ int solve(Slice input)
     return 0;
 }
 
+void printAnswers(){}
+
 typedef struct Policy
 {
     int lower;

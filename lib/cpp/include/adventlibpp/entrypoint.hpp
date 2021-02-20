@@ -23,6 +23,7 @@ std::string readText(const std::string& file)
 }
 
 void solve(const std::string& input);
+void printAnswers();
 
 int main(void)
 {
@@ -36,6 +37,7 @@ int main(void)
         solve(g_input1);
         if(!QueryPerformanceCounter(&after)) return -1;
 
+        printAnswers();
         std::cout << "Time: " << after.QuadPart - before.QuadPart << " us" << std::endl;
         return 0;
     }
