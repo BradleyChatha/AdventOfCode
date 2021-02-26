@@ -10,6 +10,7 @@ SECTION .bss
 SECTION .data
     ROW_COUNT: equ 128
     BITMASK_DEBUG_STRING_LENGTH: equ (ROW_COUNT * 9) + 1 ; * 9 for 8 characters (for one byte) + a new line char. + 1 for the null terminator.
+    NON_FULL_BYTES_TO_SKIP: equ 3
 
     ; We're indexing via a nibble, hence why there's 15 entries.
     part1_jumpTable: dq part1.b, _trap, part1.f, _trap, part1.newline, part1.l, _trap, _trap, part1.r, _trap, _trap, _trap, _trap, _trap, _trap, _trap
@@ -25,7 +26,7 @@ solve:
     call part1
     mov [g_part1Answer], rax
 
-    ;call debugPrint
+    call debugPrint
 
     call part2
     mov [g_part2Answer], rax
@@ -222,12 +223,12 @@ part2:
     ;   RCX = Loop counter (decrementing)
     ;   RDX = Calcs
     ;   R8  = Bit counter
-    ;   R9  = Flag
+    ;   R9  = Non-full byte counter
 
     mov rcx, ROW_COUNT
     lea rsi, [part2_seatBitMasks]
     xor rdx, rdx
-    mov r9, 1
+    mov r9, NON_FULL_BYTES_TO_SKIP
 
 .loop:
     lodsb
@@ -235,8 +236,8 @@ part2:
     je .continueLoop
     cmp al, 0xFF
     je .continueLoop
-    dec r9 ; Skip the first empty seat we find. Because of the "We're not at the very front" part of the problem.
-    jz .continueLoop
+    dec r9 ; Skip the first X empty seats we find. Because of who the fuck knows, the problem is super poorly worded for part 2.
+    jnz .continueLoop
 
     mov dl, al
     xor r8, r8

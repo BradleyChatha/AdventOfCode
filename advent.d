@@ -26,6 +26,64 @@ struct ScaffoldFile
     string contents;
 }
 
+struct RunResult
+{
+    string solutionName;
+    string resultPart1;
+    string resultPart2;
+    string timeTaken; // Programs should only be reporting the time taken for their solve function, not anything else.
+    string timeTakenMs;
+    
+    string output;
+    int statusCode;
+}
+
+struct RunResultRunnerPair
+{
+    RunResult[] results;
+    Runner runner;
+}
+
+struct BenchmarkResult
+{
+    size_t runsPerSolution;
+    RunResultRunnerPair[] resultsPerRunner;
+}
+
+struct Runner
+{
+    enum Type
+    {
+        ERROR,
+        powershell
+    }
+
+    string year;
+    string day;
+    string language;
+    Type type;
+    string workingDirectory;
+    string fullPath;
+
+    private void populateFromPathIntoSolutionsRoot(string path)
+    {
+        this.fullPath         = path;
+        this.workingDirectory = path.dirName;
+        this.language         = this.workingDirectory.baseName;
+        this.day              = this.workingDirectory.dirName.baseName;
+        this.year             = this.workingDirectory.dirName.dirName.baseName;
+    }
+
+    static Runner fromPowershellScript(string path)
+    {
+        Runner runner;
+        runner.populateFromPathIntoSolutionsRoot(path);
+        runner.type = Type.powershell;
+
+        return runner;
+    }
+}
+
 int main(string[] args)
 {
     return new CommandLineInterface!advent().parseAndExecute(args);
@@ -48,6 +106,79 @@ Result!void dayValidator(int day)
 string createYearDayPath(int year, int day)
 {
     return "%s/%s/".format(year, day);
+}
+
+auto discoverRunners(string path)
+{
+    return dirEntries(path, SpanMode.breadth)
+                    .map!(d => d.name.buildPath("advent_run.ps1"))
+                    .map!(s => s.replace('\\', '/'))
+                    .filter!(s => s.exists)
+                    .map!(s => Runner.fromPowershellScript(s))
+                    .array;
+}
+
+RunResult executeRunner(Runner runner, bool release)
+{
+    version(Windows)
+        const POWERSHELL = "powershell";
+    else
+        const POWERSHELL = "pwsh";
+
+    const command = escapeShellCommand(POWERSHELL, "-ExecutionPolicy", "Bypass", "./advent_run.ps1", release ? "-Release" : "");
+    //debug writeln(command);
+    auto value = RunResult(runner.language);
+    const results = executeShell(
+        command, 
+        null, 
+        Config.none, 
+        ulong.max, 
+        runner.workingDirectory
+    );
+    value.output = results.output;
+    value.statusCode = results.status;
+    
+    const regex1 	= value.output.matchFirst(regex(`Part 1: (.+)`));
+    const regex2 	= value.output.matchFirst(regex(`Part 2: (.+)`));
+    const regexTime	= value.output.matchFirst(regex(`Time: ([0-9]+) (.+)`));
+
+    value.resultPart1 = (regex1.empty) ? "COULD NOT FIND" : regex1[1];
+    value.resultPart2 = (regex2.empty) ? "COULD NOT FIND" : regex2[1];
+    
+    if(!regexTime.empty)
+    {
+        Duration taken;
+        switch(regexTime[2])
+        {
+            case "ms"    :
+            case "msecs" : taken = dur!"msecs" (regexTime[1].to!ulong); break;
+            case "us"    :
+            case "usecs" : taken = dur!"usecs" (regexTime[1].to!ulong); break;
+            case "hnsecs": taken = dur!"hnsecs"(regexTime[1].to!ulong); break;
+            case "nsecs" : taken = dur!"nsecs" (regexTime[1].to!ulong); break;
+        
+            default: break;
+        }
+        
+        value.timeTaken = (taken != Duration.init) ? taken.to!string : "INVALID TIME UNIT: "~regexTime[2];
+        value.timeTakenMs = taken.total!"msecs".to!string;
+    }
+    else
+        value.timeTaken = "COULD NOT FIND";
+
+    return value;
+}
+
+RunResultRunnerPair benchmarkRunner(Runner runner, bool release, size_t runCount)
+{
+    RunResultRunnerPair pair;
+    pair.results = new RunResult[runCount];
+    pair.runner = runner;
+
+    foreach(i; 0..runCount)
+        pair.results[i] = executeRunner(runner, release);
+
+    return pair;
 }
 
 @Command("new day", "Creates the initial structure for a day")
@@ -139,18 +270,6 @@ struct RunDayCommand
     @CommandNamedArg("r|release", "Pass the -Release flag into the solution's build scripts.")
     Nullable!bool release;
 
-    static struct RunResult
-    {
-        string solutionName;
-        string resultPart1;
-        string resultPart2;
-		string timeTaken; // Programs should only be reporting the time taken for their solve function, not anything else.
-		string timeTakenMs;
-        
-        string output;
-        int statusCode;
-    }
-
     int onExecute()
     {
         const path = createYearDayPath(year, day);
@@ -167,15 +286,11 @@ struct RunDayCommand
             return -1;
         }
 
-        auto runners = dirEntries(path, SpanMode.breadth)
-                       .map!(d => d.name.buildPath("advent_run.ps1"))
-                       .map!(s => s.replace('\\', '/'))
-                       .filter!(s => s.exists)
-                       .array;               
+        auto runners = discoverRunners(path);           
         auto results = new RunResult[runners.length];
 
         foreach(i, runner; runners.parallel(runners.length))
-            results[i] = this.run(runner);
+            results[i] = executeRunner(runner, this.release.get(false));
 			
 		auto  resultsAndHeader = results.chain([RunResult("NAME", "PART1", "PART2", "TIME", "TIME(MS)")]);
         const largestName      = resultsAndHeader.map!(r => r.solutionName.length).maxElement();
@@ -205,57 +320,6 @@ struct RunDayCommand
         }
 
         return 0;
-    }
-
-    RunResult run(string adventRunPath)
-    {
-        version(Windows)
-            const POWERSHELL = "powershell";
-        else
-            const POWERSHELL = "pwsh";
-
-        const command = escapeShellCommand(POWERSHELL, "-ExecutionPolicy", "Bypass", "./advent_run.ps1", this.release.get(false) ? "-Release" : "");
-        //debug writeln(command);
-        auto value = RunResult(adventRunPath.dirName.baseName);
-        const results = executeShell(
-            command, 
-            null, 
-            Config.none, 
-            ulong.max, 
-            adventRunPath.dirName
-        );
-        value.output = results.output;
-        value.statusCode = results.status;
-        
-        const regex1 	= value.output.matchFirst(regex(`Part 1: (.+)`));
-        const regex2 	= value.output.matchFirst(regex(`Part 2: (.+)`));
-		const regexTime	= value.output.matchFirst(regex(`Time: ([0-9]+) (.+)`));
-
-        value.resultPart1 = (regex1.empty) ? "COULD NOT FIND" : regex1[1];
-        value.resultPart2 = (regex2.empty) ? "COULD NOT FIND" : regex2[1];
-		
-		if(!regexTime.empty)
-		{
-			Duration taken;
-			switch(regexTime[2])
-			{
-				case "ms"    :
-				case "msecs" : taken = dur!"msecs" (regexTime[1].to!ulong); break;
-				case "us"    :
-				case "usecs" : taken = dur!"usecs" (regexTime[1].to!ulong); break;
-				case "hnsecs": taken = dur!"hnsecs"(regexTime[1].to!ulong); break;
-				case "nsecs" : taken = dur!"nsecs" (regexTime[1].to!ulong); break;
-			
-				default: break;
-			}
-			
-			value.timeTaken = (taken != Duration.init) ? taken.to!string : "INVALID TIME UNIT: "~regexTime[2];
-			value.timeTakenMs = taken.total!"msecs".to!string;
-		}
-		else
-			value.timeTaken = "COULD NOT FIND";
-
-        return value;
     }
 }
 

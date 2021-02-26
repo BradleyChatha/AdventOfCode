@@ -57,12 +57,19 @@ void solve(string input)
         seatOccupiedBitmask[rowVector[0]] |= (1 << colVector[0]);
     }
 
-    // I don't completely understand why, but the D version is getting slightly different mask results than the other versions.
-    // So while the other versions have to skip the first non-empty, non-full byte, the D version doesn't need to skip it.
+    writeln(seatOccupiedBitmask);
+
+    bool foundFirst = false;
     foreach(i, mask; seatOccupiedBitmask)
     {
         if(mask == 0 || mask == 255)
             continue;
+
+        if(!foundFirst)
+        {
+            foundFirst = true;
+            continue;
+        }
 
         size_t col;
         while(mask & 1)

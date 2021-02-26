@@ -4,6 +4,7 @@
 
 #define ROW_MAX 128
 #define COL_MAX 8
+#define NON_FULL_BYTES_TO_SKIP 3
 
 size_t g_part1Answer;
 size_t g_part2Answer;
@@ -54,18 +55,16 @@ void solve(const std::string& input)
         }
     }
 
-    bool foundFirst = false;
+    int foundCount = 0;
     for(size_t row = 0; row < ROW_MAX; row++)
     {
         uint8_t rowMask = seatMask[row];
         if(rowMask == 0 || rowMask == 255)
             continue;
 
-        if(!foundFirst)
-        {
-            foundFirst = true;
+        foundCount++;
+        if(foundCount < NON_FULL_BYTES_TO_SKIP)
             continue;
-        }
 
         size_t col = 0;
         while(rowMask & 1)

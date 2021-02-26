@@ -43,10 +43,14 @@ def solution(input: str):
 
         seatMask[rowVect[0]] |= (1 << colVect[0])
 
-    # Interestingly, like the D version, we're getting a different bitmask from the C and ASM versions, so we can skip an additional check.
+    foundFirst = False
     for row in range(0, len(seatMask)):
         rowMask = seatMask[row]
         if rowMask == 0 or rowMask == 255:
+            continue
+
+        if not foundFirst:
+            foundFirst = True
             continue
 
         col = 0
